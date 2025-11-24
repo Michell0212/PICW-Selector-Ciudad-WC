@@ -9,6 +9,52 @@
     <script type="module" src="./src/components/CitySelector.js"></script>
   </head>
   <body>
-    <city-app></city-app>
-  </body>
+  <h2>Descubre Ecuador</h2>
+
+  <city-selector id="cs" placeholder="Ingresa ciudad"></city-selector>
+
+
+
+
+
+
+  
+  <script type="module">
+    import './src/components/CitySelector.js';
+
+    // DATOS DEMO!!!
+    const cities = [
+      'Quito',
+      'Guayaquil',
+      'Cuenca',
+      'Ambato',
+      'Loja',
+      'Manta',
+      'Salinas',
+      'Ibarra',
+      'Riobamba',
+      'Machala',
+      { name: 'New York', country: 'USA' },
+      { name: 'Los Angeles', country: 'USA' },
+      { name: 'Madrid', country: 'Spain' }
+    ];
+
+    const cs = document.getElementById('cs');
+
+    // pasar lista de ciudades al componente (propiedad pública)
+    cs.cities = cities;
+
+    // escuchar evento 'city-selected' (hijo -> padre)
+    cs.addEventListener('city-selected', (e) => {
+      console.log('Seleccionada', e.detail);
+    });
+
+    // escuchar typing para búsqueda remota (opcional)
+    cs.addEventListener('city-typing', (e) => {
+    });
+  </script>
+
+
+
+</body>
 </html>

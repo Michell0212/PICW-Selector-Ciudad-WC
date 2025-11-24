@@ -9,11 +9,14 @@ export class CityApp extends HTMLElement {
   }
 
   connectedCallback() {
-    const valorCiudad = this.shadowRoot.querySelector('city-info');
+    const cityInfo = this.shadowRoot.querySelector('city-info');
+    const citySelector = this.shadowRoot.querySelector('city-selector');
 
-    this.shadowRoot.querySelector('city-selector').addEventListener('ciudad-cambio', (ev) => {
-      valorCiudad.nombreCiudad = ev.detail.ciudad;
-    })
+    // Escuchar el evento correcto que dispara city-selector
+    citySelector.addEventListener('city-selected', (ev) => {
+      cityInfo.nombreCiudad = ev.detail.name;  // "name" viene de city-selector
+    });
   }
 }
+
 customElements.define('city-app', CityApp);
