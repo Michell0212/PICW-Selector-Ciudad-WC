@@ -28,7 +28,7 @@ export class CityApp extends HTMLElement {
 
     // 2. OBTENER EL ELEMENTO HIJO USANDO shadowRoot
     const citySelector = this.shadowRoot.querySelector('#cs');
-    const cityInfo = this.shadowRoot.querySelector('city-info');
+    const cityInfo = this.shadowRoot.querySelector('city-info');    
 
     // a) Pasar la lista de ciudades
     if (citySelector) {

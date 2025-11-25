@@ -11,3 +11,6 @@ La carpeta `/assets` es para guardar imágenes u otros archivos estáticos que n
 
 Imagen de la app funcionando:
 ![](https://i.imgur.com/imKMUUq.png)
+
+WC LISTS --> FALTA (LITERAL 2: ITEMS)
+![](https://i.imgur.com/uH1Wqap.png)
