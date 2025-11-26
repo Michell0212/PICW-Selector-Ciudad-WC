@@ -1,0 +1,119 @@
+
+:root {
+  --pink-light: #ffe6f2;
+  --pink: #ffb6d9;
+  --pink-medium: #ff8ec3;
+  --pink-strong: #ff6bb0;
+  --pink-shadow: rgba(255, 105, 180, 0.25);
+
+  --text-dark: #5a344c;
+  --text-medium: #8b4b74;
+  --white: #fff;
+}
+
+/* CONTENEDORES GENERALES */
+* {
+  font-family: "Poppins", sans-serif;
+  box-sizing: border-box;
+}
+
+body {
+  background: linear-gradient(135deg, #ffe6f2, #ffd1e8);
+  color: var(--text-dark);
+  margin: 0;
+  padding: 20px;
+}
+
+/* TARJETAS */
+.card {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 6px 16px var(--pink-shadow);
+  border: 1px solid var(--pink);
+}
+
+/* INPUT  */
+input, select, textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 2px solid var(--pink);
+  background: var(--pink-light);
+  font-size: 14px;
+  color: var(--text-dark);
+  outline: none;
+  transition: 0.2s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--pink-medium);
+  background: var(--white);
+  box-shadow: 0 0 8px var(--pink-shadow);
+}
+
+/* BOTONES */
+button {
+  background: var(--pink);
+  color: var(--text-dark);
+  font-weight: 600;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: 0.25s ease;
+  box-shadow: 0 4px 12px var(--pink-shadow);
+}
+
+button:hover {
+  background: var(--pink-medium);
+}
+
+button:active {
+  background: var(--pink-strong);
+}
+
+/* LISTA DESPLEGABLE */
+.list {
+  background: var(--white);
+  border: 2px solid var(--pink);
+  border-radius: 12px;
+  margin-top: 4px;
+  box-shadow: 0 6px 18px var(--pink-shadow);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.item {
+  padding: 10px 12px;
+  cursor: pointer;
+  color: var(--text-medium);
+  transition: 0.15s;
+}
+
+.item:hover,
+.item.active {
+  background: var(--pink-light);
+  color: var(--text-dark);
+}
+
+
+.badge {
+  display: inline-block;
+  padding: 6px 10px;
+  background: var(--pink);
+  border-radius: 12px;
+  color: var(--text-dark);
+  font-size: 13px;
+  margin: 4px;
+  box-shadow: 0 2px 6px var(--pink-shadow);
+}
+.badge:hover {
+  background: var(--pink-medium);
+}
+
+/*TITULOS */
+h1, h2, h3 {
+  color: var(--text-dark);
+  font-weight: 700;
+}
