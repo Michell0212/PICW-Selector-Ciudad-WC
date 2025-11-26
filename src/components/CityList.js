@@ -1,97 +1,113 @@
-// src/components/CityList.js
 export class CityList extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-
-    this._cities = []; // estado interno: lista de ciudades
+    this._cities = [];
 
     this.shadowRoot.innerHTML = `
-      
+      <style>
+        :host { 
+          display:block; 
+          font-family: Arial, sans-serif; 
+        }
+
+        h3 { 
+          margin: 0 0 10px 0; 
+          font-size: 16px;
+          font-weight: bold;
+        }
+
+        ul { 
+          list-style: none; 
+          padding: 0; 
+          margin: 0; 
+        }
+
+        .empty-box {
+          padding: 12px;
+          background: #f8f8f8;
+          border: 1px dashed #ccc;
+          border-radius: 6px;
+          font-size: 14px;
+          color: #666;
+          display: none;
+        }
+      </style>
 
       <h3>Ciudades seleccionadas</h3>
-      <ul class="list" id="list"></ul>
-      <p class="empty" id="empty-msg">No hay ciudades en la lista.</p>
+
+      <div id="empty-box" class="empty-box">
+        No hay ciudades en la lista.
+      </div>
+
+      <ul id="list"></ul>
     `;
   }
 
-  // -------- Propiedad pública: padre → hijo --------
-  get cities() {
-    return this._cities;
+  get cities() { 
+    return this._cities; 
   }
 
   set cities(value) {
     if (!Array.isArray(value)) value = [];
-    this._cities = value;
+    this._cities = value.map(v => typeof v === "string" ? { name: v } : v);
     this._render();
   }
 
-  connectedCallback() {
-    this._render();
+  connectedCallback() { 
+    this._render(); 
   }
 
-  // -------- Renderizado de la lista --------
   _render() {
-    const listEl = this.shadowRoot.querySelector('#list');
-    const emptyMsg = this.shadowRoot.querySelector('#empty-msg');
+    const listEl = this.shadowRoot.getElementById('list');
+    const emptyBox = this.shadowRoot.getElementById('empty-box');
 
     listEl.innerHTML = '';
 
-    if (!this._cities.length) {
-      emptyMsg.style.display = 'block';
+    // Mostrar/ocultar mensaje de lista vacía
+    if (this._cities.length === 0) {
+      emptyBox.style.display = 'block';
       return;
     }
 
-    emptyMsg.style.display = 'none';
+    emptyBox.style.display = 'none';
 
-    this._cities.forEach((cityName, index) => {
+    this._cities.forEach((cityObj) => {
       const li = document.createElement('li');
-      li.classList.add('item');
+      const item = document.createElement('city-item');
 
-      const nameSpan = document.createElement('span');
-      nameSpan.classList.add('name');
-      nameSpan.textContent = cityName;
+      item.setAttribute('city', cityObj.name);
 
-      const editBtn = document.createElement('button');
-      editBtn.classList.add('edit');
-      editBtn.textContent = 'Editar';
+      // --- EVENTOS -------------------------------------------------------------
 
-      const deleteBtn = document.createElement('button');
-      deleteBtn.classList.add('delete');
-      deleteBtn.textContent = 'X';
+      item.addEventListener('item-deleted', (e) => {
+        const name = e.detail.name;
 
-      // Eliminar ciudad -> emite evento al padre
-      deleteBtn.addEventListener('click', () => {
-        this.dispatchEvent(
-          new CustomEvent('city-remove', {
-            detail: { index, name: cityName },
-            bubbles: true,
-            composed: true,
-          })
-        );
+        this._cities = this._cities.filter(c => c.name !== name);
+
+        this._render();
+
+        this.dispatchEvent(new CustomEvent('city-removed-from-list', {
+          detail: { name },
+          bubbles: true,
+          composed: true
+        }));
       });
 
-      // Editar ciudad -> emite evento al padre
-      editBtn.addEventListener('click', () => {
-        const nuevoNombre = prompt('Nuevo nombre para la ciudad:', cityName);
-        if (!nuevoNombre || !nuevoNombre.trim()) return;
+      item.addEventListener('item-updated', (e) => {
+        const { oldName, newName } = e.detail;
 
-        this.dispatchEvent(
-          new CustomEvent('city-update', {
-            detail: {
-              index,
-              oldName: cityName,
-              newName: nuevoNombre.trim(),
-            },
-            bubbles: true,
-            composed: true,
-          })
-        );
+        const city = this._cities.find(c => c.name === oldName);
+        if (city) city.name = newName;
+
+        this.dispatchEvent(new CustomEvent('city-updated-in-list', {
+          detail: { oldName, newName },
+          bubbles: true,
+          composed: true
+        }));
       });
 
-      li.appendChild(nameSpan);
-      li.appendChild(editBtn);
-      li.appendChild(deleteBtn);
+      li.appendChild(item);
       listEl.appendChild(li);
     });
   }

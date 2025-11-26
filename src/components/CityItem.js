@@ -4,132 +4,95 @@ export class CityItem extends HTMLElement {
     this.attachShadow({ mode: "open" });
   }
 
-  static get observedAttributes() {
-    return ["city"];
+  static get observedAttributes() { return ["city"]; }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === "city" && this.shadowRoot) {
+      const nameEl = this.shadowRoot.querySelector("#name");
+      const inputEl = this.shadowRoot.querySelector("#editInput");
+      if (nameEl) nameEl.textContent = newValue;
+      if (inputEl) inputEl.value = newValue;
+    }
   }
 
-  attributeChangedCallback() {
-    this.render();
-  }
-
-  connectedCallback() {
-    this.render();
-  }
+  connectedCallback() { this.render(); }
 
   render() {
     const city = this.getAttribute("city") || "Ciudad";
 
     this.shadowRoot.innerHTML = `
       <style>
-        .item {
-          display: flex;
-          align-items: center;
-          padding: 8px 12px;
-          background: #f9f9f9;
-          border-radius: 8px;
-          margin: 6px 0;
-          font-family: Arial, sans-serif;
-          justify-content: space-between;
-          border: 1px solid #ddd;
-        }
-
-        .left {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-
-        span {
-          font-weight: 600;
-        }
-
-        button {
-          background: #3498db;
-          color: white;
-          border: none;
-          padding: 5px 10px;
-          border-radius: 5px;
-          cursor: pointer;
-          font-size: 14px;
-          transition: 0.2s;
-        }
-
-        button.delete {
-          background: #e74c3c;
-        }
-
-        button:hover {
-          opacity: 0.8;
-        }
-
-        input {
-          padding: 5px;
-          border-radius: 5px;
-          border: 1px solid #ccc;
-          font-size: 14px;
-        }
+        .item { display:flex; justify-content:space-between; align-items:center;
+               padding:8px; border:1px solid #ddd; border-radius:6px; margin:6px 0;
+               font-family: Arial, sans-serif;}
+        .left { display:flex; gap:10px; align-items:center; }
+        button { padding:4px 8px; border-radius:4px; cursor:pointer; }
+        .delete { background:#e74c3c; color:#fff; border:none; }
+        .edit { background:#3498db; color:#fff; border:none; }
+        .save { background:#2ecc71; color:#fff; border:none; display:none; }
+        input { display:none; padding:4px; border-radius:4px; border:1px solid #ccc; }
       </style>
 
       <div class="item">
         <div class="left">
-          <span id="cityName">${city}</span>
-          <input id="editInput" value="${city}" style="display:none;">
+          <span id="name">${city}</span>
+          <input id="editInput" value="${city}">
         </div>
-
-        <div class="buttons">
-          <button id="editBtn">Editar</button>
-          <button id="saveBtn" style="display:none;">Guardar</button>
+        <div class="controls">
+          <button class="edit" id="editBtn">Editar</button>
+          <button class="save" id="saveBtn">Guardar</button>
           <button class="delete" id="deleteBtn">X</button>
         </div>
       </div>
     `;
 
-    this.addListeners();
+    this._attachListeners();
   }
 
-  addListeners() {
-    const deleteBtn = this.shadowRoot.querySelector("#deleteBtn");
-    const editBtn = this.shadowRoot.querySelector("#editBtn");
-    const saveBtn = this.shadowRoot.querySelector("#saveBtn");
-    const cityName = this.shadowRoot.querySelector("#cityName");
-    const editInput = this.shadowRoot.querySelector("#editInput");
+  _attachListeners() {
+    const deleteBtn = this.shadowRoot.querySelector('#deleteBtn');
+    const editBtn = this.shadowRoot.querySelector('#editBtn');
+    const saveBtn = this.shadowRoot.querySelector('#saveBtn');
+    const nameEl = this.shadowRoot.querySelector('#name');
+    const input = this.shadowRoot.querySelector('#editInput');
 
-    // Eliminar item
-    deleteBtn.addEventListener("click", () => {
-      this.dispatchEvent(
-        new CustomEvent("delete-item", {
-          detail: { city: this.getAttribute("city") },
-          bubbles: true,
-          composed: true
-        })
-      );
+    deleteBtn.addEventListener('click', () => {
+      const name = this.getAttribute('city');
+      this.dispatchEvent(new CustomEvent('item-deleted', {
+        detail: { name },
+        bubbles: true,
+        composed: true
+      }));
     });
 
-    // Editar
-    editBtn.addEventListener("click", () => {
-      cityName.style.display = "none";
-      editInput.style.display = "block";
-      editBtn.style.display = "none";
-      saveBtn.style.display = "inline-block";
+    editBtn.addEventListener('click', () => {
+      nameEl.style.display = 'none';
+      input.style.display = 'inline-block';
+      editBtn.style.display = 'none';
+      saveBtn.style.display = 'inline-block';
+      input.focus();
     });
 
-    // Guardar edición
-    saveBtn.addEventListener("click", () => {
-      const newCity = editInput.value.trim();
+    saveBtn.addEventListener('click', () => {
+      const oldName = this.getAttribute('city');
+      const newName = input.value.trim();
+      if (!newName) return;
 
-      if (!newCity) return;
+      this.setAttribute('city', newName); // ahora NO resetea UI
 
-      this.setAttribute("city", newCity);
+      this.dispatchEvent(new CustomEvent('item-updated', {
+        detail: { oldName, newName },
+        bubbles: true,
+        composed: true
+      }));
 
-      this.dispatchEvent(
-        new CustomEvent("update-item", {
-          detail: { newCity },
-          bubbles: true,
-          composed: true
-        })
-      );
+      // volver a modo normal manualmente
+      input.style.display = 'none';
+      nameEl.style.display = 'inline-block';
+      saveBtn.style.display = 'none';
+      editBtn.style.display = 'inline-block';
     });
   }
 }
 
-customElements.define("city-item", CityItem);
+customElements.define('city-item', CityItem);

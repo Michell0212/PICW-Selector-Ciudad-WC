@@ -1,4 +1,4 @@
-// CityInfo.js (MODIFICADO para formato CARD)
+// CityInfo.js (CORREGIDO)
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -14,31 +14,31 @@ template.innerHTML = `
             border-radius: 12px;
             box-shadow: 0 6px 20px rgba(0,0,0,0.08);
             overflow: hidden;
-            max-width: 600px; /* Ancho máximo para la tarjeta */
-            margin: 0 auto; /* Centra la tarjeta */
+            max-width: 600px;
+            margin: 0 auto;
         }
         .image-container {
             width: 100%;
             height: 200px;
-            background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 50%, rgba(100,100,100,0.3) 100%); /* Degradado para placeholder */
+            background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 50%, rgba(100,100,100,0.3) 100%);
             background-size: cover;
             background-position: center;
             position: relative;
             display: flex;
-            align-items: flex-end; /* Alinea el texto en la parte inferior */
+            align-items: flex-end;
             padding: 20px;
             box-sizing: border-box;
-            color: #fff;  con altitude"></i>
+            color: #fff;
             font-size: 1.8em;
             font-weight: bold;
         }
         .image-container.has-image {
-            background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 50%); /* Degradado sobre la imagen */
+            background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 50%);
             background-size: cover;
             background-position: center;
         }
         .city-name-overlay {
-            position: absolute; /* Para que el nombre de la ciudad quede encima */
+            position: absolute;
             bottom: 20px;
             left: 20px;
             font-size: 1.8em;
@@ -50,7 +50,7 @@ template.innerHTML = `
         }
         .tag {
             display: inline-block;
-            background: #e0f2f7; /* Color azul claro para el tag */
+            background: #e0f2f7;
             color: #0b76ef;
             padding: 5px 12px;
             border-radius: 20px;
@@ -84,15 +84,14 @@ template.innerHTML = `
             font-size: 1.4em;
             margin-bottom: 8px;
         }
-        .stat-icon.population { color: #0b76ef; } /* Azul */
-        .stat-icon.altitude { color: #4CAF50; }    /* Verde */
-        .stat-icon.temperature { color: #FF9800; } /* Naranja */
+        .stat-icon.population { color: #0b76ef; }
+        .stat-icon.altitude { color: #4CAF50; }
+        .stat-icon.temperature { color: #FF9800; }
         .stat-value {
             font-weight: bold;
             color: #333;
             margin-top: 5px;
         }
-        /* Estilos para cuando no hay ciudad seleccionada */
         .no-city-selected {
             text-align: center;
             padding: 50px 20px;
@@ -102,6 +101,7 @@ template.innerHTML = `
             color: #777;
         }
     </style>
+
     <div class="city-card" id="card-container">
         <div class="image-container" id="image-container">
             <span class="city-name-overlay" id="city-name-overlay"></span>
@@ -109,6 +109,7 @@ template.innerHTML = `
         <div class="card-content">
             <span class="tag" id="city-tag"></span>
             <p class="description" id="city-description"></p>
+
             <div class="stats-grid">
                 <div class="stat-item">
                     <i class="fas fa-users stat-icon population"></i>
@@ -116,7 +117,7 @@ template.innerHTML = `
                     <span>Población</span>
                 </div>
                 <div class="stat-item">
-                    <i class="fas fa-mountain stat-i
+                    <i class="fas fa-mountain stat-icon altitude"></i>
                     <span id="stat-altitude" class="stat-value">N/A</span>
                     <span>Altitud</span>
                 </div>
@@ -131,7 +132,7 @@ template.innerHTML = `
 
     <div class="no-city-selected" id="no-city-message" style="display: none;">
         <h3>No hay ciudad seleccionada</h3>
-        <p>Utiliza el selector de arriba para buscar y ver información detallada de una ciudad.</p>
+        <p>Selecciona una ciudad para mostrar información.</p>
     </div>
 `;
 
@@ -141,7 +142,6 @@ export class CityInfo extends HTMLElement {
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
-    // Referencias a elementos para actualizar
     this.$cardContainer = this.shadowRoot.getElementById('card-container');
     this.$noCityMessage = this.shadowRoot.getElementById('no-city-message');
     this.$imageContainer = this.shadowRoot.getElementById('image-container');
@@ -152,67 +152,51 @@ export class CityInfo extends HTMLElement {
     this.$statAltitude = this.shadowRoot.getElementById('stat-altitude');
     this.$statTemperature = this.shadowRoot.getElementById('stat-temperature');
 
-    this._cityData = null; // Almacenará los datos completos de la ciudad
+    this._cityData = null;
   }
 
-  connectedCallback() {
-    this._render(); // Renderiza el estado inicial (sin ciudad seleccionada)
-  }
+  connectedCallback() { this._render(); }
 
-  // 🔑 PROPIEDAD PÚBLICA (SETTER): Recibe los datos completos de la ciudad
   set cityData(data) {
-    if (data && typeof data === 'object') {
+    if (data && typeof data === "object") {
       this._cityData = data;
-      this._render();
-    } else if (typeof data === 'string') {
-      // Si solo llega el nombre (string), puedes buscar datos adicionales aquí
-      // Por ahora, solo mostraremos el nombre
+    } else if (typeof data === "string") {
       this._cityData = { name: data };
-      this._render();
     } else {
-      this._cityData = null; // Limpia si no hay datos válidos
-      this._render();
+      this._cityData = null;
     }
+    this._render();
   }
 
   _render() {
     if (!this._cityData || !this._cityData.name) {
-      // Muestra el mensaje de "No hay ciudad seleccionada"
-      this.$cardContainer.style.display = 'none';
-      this.$noCityMessage.style.display = 'block';
+      this.$cardContainer.style.display = "none";
+      this.$noCityMessage.style.display = "block";
       return;
     }
 
-    // Si hay datos, muestra la tarjeta y oculta el mensaje
-    this.$cardContainer.style.display = 'block';
-    this.$noCityMessage.style.display = 'none';
+    this.$cardContainer.style.display = "block";
+    this.$noCityMessage.style.display = "none";
 
     const city = this._cityData;
 
-    // Nombre de la Ciudad
-    this.$cityNameOverlay.textContent = city.name || 'Ciudad Desconocida';
+    this.$cityNameOverlay.textContent = city.name;
+    this.$cityTag.textContent = city.tag || "General";
+    this.$cityDescription.textContent = city.description || "No hay descripción disponible.";
 
-    // Imagen (Placeholder o Real)
     if (city.image) {
-      this.$imageContainer.style.backgroundImage = `linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 50%), url(${city.image})`;
-      this.$imageContainer.classList.add('has-image');
+      this.$imageContainer.style.backgroundImage =
+        `linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 50%), url(${city.image})`;
+      this.$imageContainer.classList.add("has-image");
     } else {
-      // Placeholder de imagen
-      this.$imageContainer.style.backgroundImage = `linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 50%, rgba(100,100,100,0.3) 100%)`;
-      this.$imageContainer.classList.remove('has-image');
+      this.$imageContainer.style.backgroundImage = `linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 50%)`;
+      this.$imageContainer.classList.remove("has-image");
     }
 
-    // Tag (Categoría, Ej: 'Costa')
-    this.$cityTag.textContent = city.tag || 'General';
-
-    // Descripción
-    this.$cityDescription.textContent = city.description || 'No hay descripción disponible para esta ciudad.';
-
-    // Estadísticas
-    this.$statPopulation.textContent = city.population ? `${city.population}K` : 'N/A';
-    this.$statAltitude.textContent = city.altitude ? `${city.altitude}m` : 'N/A';
-    this.$statTemperature.textContent = city.temperature ? `${city.temperature}°C` : 'N/A';
+    this.$statPopulation.textContent = city.population ? `${city.population}K` : "N/A";
+    this.$statAltitude.textContent = city.altitude ? `${city.altitude}m` : "N/A";
+    this.$statTemperature.textContent = city.temperature ? `${city.temperature}°C` : "N/A";
   }
 }
 
-customElements.define('city-info', CityInfo);
+customElements.define("city-info", CityInfo);
